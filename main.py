@@ -1,24 +1,32 @@
-from mqtt import Client_MQTT
-from callback_mqtt import on_message
+from time import sleep
 from config.data import *
+from mqtt import *
+
+CONNECTION_BROKER = -1
 
 def main():
     #Inicializando cliente para mosquitto
-    cliente = Client_MQTT(ID_SUSCRIBE, MQTT_SERVER)
+    global CONNECTION_BROKER
 
-    result, error = cliente.initialize_client_MQTT(MQTT_SERVER)
+    #Diferente de 0, no hay comunicacion con el broker
+    while CONNECTION_BROKER != 0:
+        try:
+            client_mqtt = connect_mqtt()
+            client_mqtt.loop_start()
 
+        except Exception as e:
+            print("[Error] No se puede conectar con MQTT Broker definido en la IP: " + MQTT_SERVER )
 
-    if result:
-        cliente.client_mqtt.on_message = on_message
-        cliente.client_mqtt.loop_start()
-        while True:
-            continue
-    else:
-        print (f" {result} , {error}")
-            
+        else:
+            #Se logro la comunicacion con el broker
+            CONNECTION_BROKER = 0
+
+            #Bloque a realizar mientras esta conectado al broker
+            while CONNECTION_BROKER == 0:
+                print("Hola")
+                suscribe_to_topics(client_mqtt)
+                sleep(4)
 
 
 if __name__ == '__main__':
     main()
-

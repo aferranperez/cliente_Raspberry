@@ -1,0 +1,13 @@
+[
+    {
+        "action": "respond_load_model", 
+        "data": {
+            "ip_address": "127.0.0.1", 
+            "port": 6190,
+            "model_id": "2", 
+            "model_name": "2021-21-21"
+        }
+    }
+    
+]
+

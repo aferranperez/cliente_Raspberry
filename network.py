@@ -2,19 +2,28 @@ import socket
 import os
 import struct
 
-#Clase para hacer cualquier tipo de accion por la red
-class Socket_IoT:
+#Datos necesarios para el bloque de Network
+global dir_dest_model
+dir_dest_model = ""
 
-    def create_server(self,ip_address,port,dir_dest):
+global recv_data
+recv_data = False
+
+#Funciones para utilizar el Socket para enviar datos por la Red
+def create_server(ip_address,port,dir_dest):
         with socket.create_server((ip_address, port)) as server:
-            print("Esperando al cliente...")
+            print("Esperando al Servidor...")
             conn, address = server.accept()
-            print(f"{address[0]}:{address[1]} conectado.")
-            print("Recibiendo archivo...")
-            self.receive_file(conn, dir_dest)
-            print("Archivo recibido.")
+            print(f"Servidor con IP: {address[0]}:{address[1]} conectado.")
+            print("Recibiendo modelo...")
+            receive_file(conn, dir_dest)
+            print("Modelo recibido con exito.")
+            
+            #Quitar el estado de recepcion al Raspberry
+            global recv_data
+            recv_data = False
 
-    def send_file(self,sck: socket.socket, filename):
+def send_file(sck: socket.socket, filename):
         # Obtener el tamaño del archivo a enviar.
         filesize = os.path.getsize(filename)
         # Informar primero al servidor la cantidad
@@ -25,7 +34,7 @@ class Socket_IoT:
             while read_bytes := f.read(1024):
                 sck.sendall(read_bytes)
 
-    def receive_file_size(self,sck: socket.socket):
+def receive_file_size(sck: socket.socket):
         # Esta función se asegura de que se reciban los bytes
         # que indican el tamaño del archivo que será enviado,
         # que es codificado por el cliente vía struct.pack(),
@@ -44,10 +53,10 @@ class Socket_IoT:
         filesize = struct.unpack(fmt, stream)[0]
         return filesize
 
-    def receive_file(self,sck: socket.socket, filename):
+def receive_file(sck: socket.socket, filename):
         # Leer primero del socket la cantidad de 
         # bytes que se recibirán del archivo.
-        filesize = self.receive_file_size(sck)
+        filesize = receive_file_size(sck)
         # Abrir un nuevo archivo en donde guardar
         # los datos recibidos.
         with open(filename, "wb") as f:

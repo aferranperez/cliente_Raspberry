@@ -1,45 +1,53 @@
 from time import sleep
+from uuid import SafeUUID
 from config.data import *
 from mqtt import *
 import network
 import face_recognizer
 
+
 def main():
     #Inicializando cliente para mosquitto
     global CONNECTION_BROKER
-    global STATE
 
     client_mqtt = create_client()
 
     #Diferente de 0, no hay comunicacion con el broker
     while CONNECTION_BROKER != 0:
+        
+        #Intento conectarme con el broker
         try:
             connect_mqtt(client_mqtt)
             client_mqtt.loop_start()
-
+            
         except Exception as e:
+            #Disparo error de conexion
             print("[Error] No se puede conectar con MQTT Broker definido en la IP: " + MQTT_SERVER )
 
         else:
-            #Se logro la comunicacion con el broker
+            #Se logro la comunicacion con el broker, cambio la variable global de la conexion
             CONNECTION_BROKER = 0
+
+            #LLamo a la funcion "suscribe_to_topics" en mqtt.py
             suscribe_to_topics(client_mqtt)
 
-            #Bloque a realizar mientras esta conectado al broker
+            #Bloques de codigo a realizar, mientras se esta conectado al broker
             while CONNECTION_BROKER == 0:
-    
-                #Si es True preparo el raspberry para recibir datos
+                #Si es True la bandera "recv_data", preparo el raspberry para recibir datos
                 if network.recv_data:
                     print("-------------------")
                     print("Preparando dispositivo para recepcion de modelo...")
                     network.create_server(IP_ADDRESS, PORT_SOCKET, network.dir_dest_model)
                     print("-------------------")
                 
-                elif STATE and HAVE_MODEL:
+                elif config.data.STATE and HAVE_MODEL:
+                    #LLamo a la funcion para empezar a reconocer rostros
                     face_recognizer.clasificar_rostro()
-                    print("Hizo la funcion")
-                    STATE = 0
-
+                    print("-------------------")
+                    print("[INFO] Finalizo el modulo de Reconocimiento Facial.")
+                    print("-------------------")
+                    #Pongo el estado del raspberry a 0, ya que se dejo de reconocer rostros
+                    config.data.STATE = False
 
 
                 sleep(5)

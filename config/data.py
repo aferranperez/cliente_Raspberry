@@ -8,7 +8,8 @@ IP_ADDRESS = "127.0.0.1" #str(socket.gethostbyname(socket.gethostname()))
 TOPICS_SUSCRIBE = [ "config_device/" ]
 
 #Banderas Globales
-STATE = 1
-SYNCRONIZED= 0
-HAVE_MODEL = 1
+#global STATE
+STATE = False           #Bandera en True cuando se esta realizando el reconocimiento facial
+SYNCRONIZED= False      #Comunicacion con .......
+HAVE_MODEL = True      #Posee modelo en su carpeta de modelo
 

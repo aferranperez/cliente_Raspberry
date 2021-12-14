@@ -18,6 +18,12 @@
         "data": {
             
         }
+    },
+    {
+        "action": "set_state", 
+        "data": {
+            "ip_destino" : "127.0.0.1"
+	    }
     }
 ]
 

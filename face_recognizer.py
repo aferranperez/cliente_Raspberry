@@ -3,6 +3,7 @@ import numpy as np
 import os
 from PIL import Image
 import time
+import config.data
 
 #Clasificar Rostros 
 def clasificar_rostro():
@@ -12,7 +13,6 @@ def clasificar_rostro():
     face_recognizer.read("models/2021-10-6-21-57-49.xml")
 
     #Crear instancia de captura de video
-    cv2.namedWindow("Deteccion facial")
     cap = cv2.VideoCapture(0)
 
     if cap.isOpened():
@@ -20,7 +20,7 @@ def clasificar_rostro():
     else:
         rval = False
 
-    while rval:
+    while rval and config.data.STATE:
         caras, gray = detectar_caras(frame)
 
         if caras is not None:
@@ -38,26 +38,20 @@ def clasificar_rostro():
                     cv2.putText(frame, label_text, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0),2)
 
         #muestro el frame resultante de el proceso
-        cv2.imshow('img', frame)
-        key = cv2.waitKey(5) #ver que hace???
-
-        if key > 0:
-            cv2.destroyAllWindows()
-            for i in range(1, 5):
-                cv2.waitKey(1)
-            return
-        time.sleep(0.05)
+        cv2.imshow('Deteccion facial', frame)
+        key = cv2.waitKey(1) #ver que hace???
         rval, frame = cap.read()
     
+    cv2.destroyAllWindows()
     return
 
 #Detectar rostros
 def detectar_caras(frame):
-    #cargar el clasificador
+    #Cargar el clasificador
     face_cascade = cv2.CascadeClassifier("config/haarcascade-xml/haarcascade_frontalface_alt.xml")
     gris = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    #detectando caras en escala de grises
+    #Detectando caras en escala de grises
     caras = face_cascade.detectMultiScale(gris, scaleFactor=1.2, minNeighbors=3)
 
     #Si no se detectan caras en la imagen devolvemos esto

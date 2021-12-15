@@ -37,10 +37,18 @@ def main():
                 if network.recv_data:
                     print("-------------------")
                     print("Preparando dispositivo para recepcion de modelo...")
-                    network.create_server(IP_ADDRESS, PORT_SOCKET, network.dir_dest_model)
-                    print("-------------------")
+                    
+                    try:
+                        network.create_server(IP_ADDRESS, PORT_SOCKET, network.dir_dest_model)
+                    except Exception as e:
+                        print("[Error] No se puede recibir el modelo correctamente:" + str(e))
+                    else:
+                        config.data.DIR_MODEL = network.dir_dest_model
+                        config.data.HAVE_MODEL = True
+                        print("-------------------")
                 
-                elif config.data.STATE and HAVE_MODEL:
+                
+                elif config.data.STATE and config.data.HAVE_MODEL:
                     #LLamo a la funcion para empezar a reconocer rostros
                     face_recognizer.clasificar_rostro()
                     print("-------------------")

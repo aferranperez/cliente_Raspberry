@@ -1,4 +1,5 @@
 import json
+import os
 from time import sleep
 
 from cv2 import data
@@ -38,24 +39,31 @@ def on_message(client, userdata, message):
             # Verificar que se desea cargar un modelo
             # Verificar que sea el dispositivo correcto por la IP
             if payload_decode['action'] == "load_model" and payload_decode['data']['ip_destino'] == IP_ADDRESS:
-                #
-                payload_respond = {
-                    'action' : 'respond_load_model',
-                    'data' : {
-                        'ip_address': '%s' % IP_ADDRESS,
-                        'port' : '%s' % PORT_SOCKET,
-                        'model_id' : '%s' %payload_decode['data']['model_id'],
-                        'model_name' : '%s' %payload_decode['data']['model_name'],
-                    },
-                } 
+                dirs_models = os.listdir("models/")
+                
+                if not(payload_decode['data']['model_name']+".xml" in dirs_models):
 
-                payload_respond =  json.dumps(payload_respond)
+                    payload_respond = {
+                        'action' : 'respond_load_model',
+                        'data' : {
+                            'ip_address': '%s' % IP_ADDRESS,
+                            'port' : '%s' % PORT_SOCKET,
+                            'model_id' : '%s' %payload_decode['data']['model_id'],
+                            'model_name' : '%s' %payload_decode['data']['model_name'],
+                        },
+                    } 
+
+                    payload_respond =  json.dumps(payload_respond)
+                    
+                    client.publish(topic="config_device/answer/", payload=payload_respond, qos=0)
+                    
+                    #Preparar Raspberry para recibir archivo de modelo
+                    network.recv_data = True
+                    network.dir_dest_model = "models/" + str(payload_decode['data']['model_name']) + ".xml"
                 
-                client.publish(topic="config_device/answer/", payload=payload_respond, qos=0)
-                
-                #Preparar Raspberry para recibir archivo de modelo
-                network.recv_data = True
-                network.dir_dest_model = "models/" + str(payload_decode['data']['model_name']) + ".xml"
+                else:
+                    config.data.DIR_MODEL =  "models/" + str(payload_decode['data']['model_name']) + ".xml"
+                    config.data.HAVE_MODEL = True
 
             elif payload_decode['action'] == "set_state" and payload_decode['data']['ip_destino'] == IP_ADDRESS:
                 config.data.STATE = not(config.data.STATE)

@@ -18,7 +18,7 @@ def create_server(ip_address,port,dir_dest):
             print("Recibiendo modelo...")
             receive_file(conn, dir_dest)
             print("Modelo recibido con exito.")
-            
+            server.close()
             #Quitar el estado de recepcion al Raspberry
             global recv_data
             recv_data = False

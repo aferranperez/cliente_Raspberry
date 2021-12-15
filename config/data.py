@@ -7,9 +7,10 @@ ID_SUSCRIBE = "raspberry_prueba"
 IP_ADDRESS = "127.0.0.1" #str(socket.gethostbyname(socket.gethostname()))
 TOPICS_SUSCRIBE = [ "config_device/" ]
 
+DIR_MODEL = ""
+
 #Banderas Globales
-#global STATE
-STATE = False           #Bandera en True cuando se esta realizando el reconocimiento facial
+STATE = True#False           #Bandera en True cuando se esta realizando el reconocimiento facial
 SYNCRONIZED= False      #Comunicacion con .......
-HAVE_MODEL = True      #Posee modelo en su carpeta de modelo
+HAVE_MODEL = False       #Posee el modelo seleccionado en el ADMIN, en su carpeta de modelo
 

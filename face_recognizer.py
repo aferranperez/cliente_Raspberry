@@ -10,7 +10,7 @@ def clasificar_rostro():
 
     #Cargar modelo de reconocimiento facial
     face_recognizer = cv2.face.LBPHFaceRecognizer_create()
-    face_recognizer.read("models/2021-10-6-21-57-49.xml")
+    face_recognizer.read(config.data.DIR_MODEL)
 
     #Crear instancia de captura de video
     cap = cv2.VideoCapture(0)
